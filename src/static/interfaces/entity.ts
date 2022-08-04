@@ -19,6 +19,9 @@ export interface CharacterI extends BaseEntityI {
 export interface SpaceI extends BaseEntityI {
 }
 
+export interface CityI extends BaseEntityI {
+}
+
 
 // Common
 export interface BaseEntityI {

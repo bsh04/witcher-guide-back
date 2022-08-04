@@ -1,9 +1,8 @@
 import { model, Schema } from "mongoose";
-import { CharacterI } from "../static/interfaces/entity";
+import { CityI } from "../static/interfaces/entity";
 import { Collections } from "../static/enums";
-import File from "./file";
 
-const CharacterSchema = new Schema<CharacterI>({
+const CitySchema = new Schema<CityI>({
   name: String,
   created: Number,
   viewCount: Number,
@@ -19,15 +18,15 @@ const CharacterSchema = new Schema<CharacterI>({
     type: Schema.Types.ObjectId,
     ref: "File"
   }],
-}, { collection: Collections.CHARACTER });
+}, { collection: Collections.CITY });
 
-CharacterSchema.set('toJSON', {
+CitySchema.set('toJSON', {
   virtuals: true
 });
 
-CharacterSchema.virtual('id').get(function(){
+CitySchema.virtual('id').get(function(){
   return this._id.toHexString();
 });
 
 
-export default model<CharacterI>("Character", CharacterSchema);
+export default model<CityI>("City", CitySchema);

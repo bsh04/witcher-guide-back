@@ -4,6 +4,7 @@ import FileSchema from "../schemas/file";
 import { FILE_SERVER_URI, FILE_SERVER_USERNAME } from "../static/constants";
 import { v4 as uuidv4 } from "uuid";
 import { ImageI } from "../static/interfaces/entity";
+import * as child_process from "child_process";
 
 const ssh = new NodeSSH();
 
@@ -21,6 +22,7 @@ export class FileService {
       type
     };
     const fullFilename = `${image.id}.${image.type}`
+    const finalFullFilename = `${image.id}-converted.${image.type}`
 
     const imgPath = fs.readFileSync(file.path);
     const encode_img = imgPath.toString("base64");
@@ -28,8 +30,10 @@ export class FileService {
     await FileSchema.create(image);
 
     const imageLocalPath = uploadDir + fullFilename
+    const finalImageLocalPath = uploadDir + finalFullFilename
 
-    fs.writeFile(imageLocalPath, final_img, () => {})
+    fs.writeFileSync(imageLocalPath, final_img)
+    child_process.exec(`convert ${imageLocalPath} -resize 1920x1080 -background black -gravity center -extent 1920x1080 ${finalImageLocalPath}`)
 
     await ssh.connect({
       host: FILE_SERVER_URI,
@@ -37,13 +41,15 @@ export class FileService {
       privateKeyPath: "C:\\Users\\dmitr\\.ssh\\id_rsa" // TODO fix
     });
 
-    await ssh.putFile(imageLocalPath, "/var/www/html/images/" + fullFilename).then(() => {
+    await ssh.putFile(finalImageLocalPath, "/var/www/html/images/" + fullFilename).then(() => {
       console.log("success upload file");
     }).catch((err) => {
       console.log("err: " + err);
     });
 
+
     fs.unlinkSync(imageLocalPath)
+    fs.unlinkSync(finalImageLocalPath)
     fs.unlinkSync(uploadDir + file.filename)
 
     return image;
