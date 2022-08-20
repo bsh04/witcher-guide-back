@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 import { CharacterI } from "../static/interfaces/entity";
-import { Collections } from "../static/enums";
+import { Collections, EntityType } from "../static/enums";
 import File from "./file";
 
 const CharacterSchema = new Schema<CharacterI>({
@@ -19,6 +19,7 @@ const CharacterSchema = new Schema<CharacterI>({
     type: Schema.Types.ObjectId,
     ref: "File"
   }],
+  type: String,
 }, { collection: Collections.CHARACTER });
 
 CharacterSchema.set('toJSON', {

@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 import { CityI } from "../static/interfaces/entity";
-import { Collections } from "../static/enums";
+import { Collections, EntityType } from "../static/enums";
 
 const CitySchema = new Schema<CityI>({
   name: String,
@@ -18,6 +18,7 @@ const CitySchema = new Schema<CityI>({
     type: Schema.Types.ObjectId,
     ref: "File"
   }],
+  type: String,
 }, { collection: Collections.CITY });
 
 CitySchema.set('toJSON', {

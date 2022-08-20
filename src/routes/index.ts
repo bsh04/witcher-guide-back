@@ -119,7 +119,7 @@ router.post(URLs.EntityAdd, async (req: CustomRequest<AddEntityRequest>, res) =>
 
 router.get(URLs.EntityView, async (req: any, res) => {
   try {
-    const data = await characterService.view(req.query["id"]);
+    const data = await characterService.view(req.query["id"], req.query["type"]);
     res.status(200).json({ ...data });
   } catch (err: any) {
     console.log(err.message);

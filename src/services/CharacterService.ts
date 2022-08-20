@@ -1,12 +1,14 @@
-import { CharacterI } from "../static/interfaces/entity";
+import { BaseEntityI, CharacterI } from "../static/interfaces/entity";
 import { AddEntityRequest } from "../static/interfaces/requestsInterfaces";
 import Character from "../schemas/character";
+import CharacterSchema from "../schemas/character";
 import { findUserByToken } from "../helpers/findUserByToken";
 import { onImagesToObjectIds } from "../helpers/fileHelpers";
-import CharacterSchema from "../schemas/character";
 import { EntityType } from "../static/enums";
 import Space from "../schemas/space";
 import City from "../schemas/city";
+import SpaceSchema from "../schemas/space";
+import CitySchema from "../schemas/city";
 
 export class CharacterService {
   async add(data: AddEntityRequest, token?: string): Promise<CharacterI> {
@@ -54,7 +56,8 @@ export class CharacterService {
       description: data.description,
       images: images.map((item) => item._id),
       created: Date.now(),
-      creator: user
+      creator: user,
+      type: data.type,
     }
 
     let entity
@@ -76,32 +79,37 @@ export class CharacterService {
     return entity;
   }
 
-  async view(id?: string) {
+  async view(id?: string, type?: EntityType) {
     if (!id) {
       throw new Error("No id");
     }
+    if (!type) {
+      throw new Error("No type");
+    }
+    const schema = type === EntityType.CHARACTER ? CharacterSchema : type === EntityType.SPACE ? SpaceSchema : CitySchema
 
-    const character = await CharacterSchema.findById(id).populate("images").populate("description").populate("creator");
+    const entity = await schema.findById(id).populate("images").populate("description").populate("creator");
 
-    if (!character) {
+    if (!entity) {
       throw new Error("No character");
     }
-    await character.updateOne({ viewCount: (character.viewCount || 0) + 1 });
+    await entity.updateOne({ viewCount: (entity.viewCount || 0) + 1 });
 
-    const characterView: CharacterI = {
-      id: character.id,
-      name: character.name,
-      created: character.created,
-      images: character.images?.map((item: any) => ({ id: item.id, name: item.name, type: item.type })),
-      description: character.description?.map((item: any) => ({ title: item.title, content: item.content })),
+    const entityView: BaseEntityI = {
+      id: entity.id,
+      name: entity.name,
+      created: entity.created,
+      images: entity.images?.map((item: any) => ({ id: item.id, name: item.name, type: item.type })),
+      description: entity.description?.map((item: any) => ({ title: item.title, content: item.content })),
       creator: {
-        id: character.creator?.id,
-        login: character.creator?.login
+        id: entity.creator?.id,
+        login: entity.creator?.login
       },
-      viewCount: character.viewCount || 0
+      viewCount: entity.viewCount || 0,
+      type: entity.type,
     };
 
-    return characterView;
+    return entityView;
 
   }
 }

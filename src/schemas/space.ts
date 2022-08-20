@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 import { CharacterI, SpaceI } from "../static/interfaces/entity";
-import { Collections } from "../static/enums";
+import { Collections, EntityType } from "../static/enums";
 
 const SpaceSchema = new Schema<SpaceI>({
   name: String,
@@ -18,6 +18,7 @@ const SpaceSchema = new Schema<SpaceI>({
     type: Schema.Types.ObjectId,
     ref: "File"
   }],
+  type: String,
 }, { collection: Collections.SPACE });
 
 SpaceSchema.set('toJSON', {

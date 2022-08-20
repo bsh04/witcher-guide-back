@@ -1,4 +1,6 @@
 // User
+import { EntityType } from "../enums";
+
 export interface UserI {
   id: string;
   login: string;
@@ -14,6 +16,7 @@ export interface ViewUserI {
 
 
 export interface CharacterI extends BaseEntityI {
+
 }
 
 export interface SpaceI extends BaseEntityI {
@@ -32,6 +35,7 @@ export interface BaseEntityI {
   images?: Array<ImageI>;
   description?: Array<DescriptionI>;
   viewCount: number
+  type: EntityType
 }
 export interface BaseEntityPreviewI extends Omit<BaseEntityI, "creator" | "created" | "description" | "viewCount"> {
 }

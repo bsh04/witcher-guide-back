@@ -9,26 +9,30 @@ import { EntityType } from "../static/enums";
 export class CommonService {
 
   async mainPageData(params: MainPageDataRequest): Promise<MainPageDataResponse> {
-    const newestData: Array<any> = await this.getLimitedEntities(5, "-created")
-    const popularData: Array<any> = await this.getLimitedEntities(5, "-viewCount")
-    const allArticlesData: Array<any> = await this.getAllEntities(params.query, params.type)
+    const newestData: Array<any> = await this.getLimitedEntities(5, "-created");
+    const popularData: Array<any> = await this.getLimitedEntities(5, "-viewCount");
+    const allArticlesData: Array<any> = await this.getAllEntities(params.query, params.type);
+    console.log(allArticlesData);
 
     const viewNewestData: Array<BaseEntityPreviewI> = newestData.slice(0, 5).map((item) => ({
       id: item.id,
       images: item.images,
-      name: item.name
+      name: item.name,
+      type: item.type
     }));
 
     const viewPopularData: Array<BaseEntityPreviewI> = popularData.slice(0, 5).map((item) => ({
       id: item.id,
       images: item.images,
-      name: item.name
+      name: item.name,
+      type: item.type
     }));
 
     const viewAllArticlesData: Array<BaseEntityPreviewI> = allArticlesData.map((item) => ({
       id: item.id,
       images: item.images,
-      name: item.name
+      name: item.name,
+      type: item.type
     }));
 
     const newestArticles: Array<BaseEntityPreviewI> = viewNewestData;
@@ -66,8 +70,8 @@ export class CommonService {
     if (query) {
       queryOptions["name"] = {
         $regex: query,
-          $options: "i"
-      }
+        $options: "i"
+      };
     }
 
     if (!type) {
@@ -82,7 +86,7 @@ export class CommonService {
       return sortArray(allData, {
         by: "name",
         order: "asc"
-      })
+      });
     }
 
     switch (type) {
@@ -91,20 +95,20 @@ export class CommonService {
         return sortArray(allCharactersData, {
           by: "name",
           order: "asc"
-        })
+        });
       case EntityType.SPACE:
         const allSpacesData: Array<any> = await SpaceSchema.find(queryOptions).populate("images");
         return sortArray(allSpacesData, {
           by: "name",
           order: "asc"
-        })
+        });
 
       case EntityType.CITY:
         const allCitiesData: Array<any> = await CitySchema.find(queryOptions).populate("images");
         return sortArray(allCitiesData, {
           by: "name",
           order: "asc"
-        })
+        });
     }
 
   }
